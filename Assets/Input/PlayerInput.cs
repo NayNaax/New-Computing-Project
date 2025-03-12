@@ -62,6 +62,24 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ResizeUp"",
+                    ""type"": ""Button"",
+                    ""id"": ""7f5d105a-defe-474f-961f-12a8dea62a7a"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ResizeDown"",
+                    ""type"": ""Button"",
+                    ""id"": ""0cec5cab-5f98-4e1e-89e4-de5230b1dacf"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -150,6 +168,28 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8489e15a-e9ef-4cbe-a648-6bb5c2e4ffc7"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ResizeUp"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7e13bdd3-67b9-4bf6-9e72-ff598bc445ed"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ResizeDown"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -680,6 +720,8 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_OnFoot_Jump = m_OnFoot.FindAction("Jump", throwIfNotFound: true);
         m_OnFoot_Look = m_OnFoot.FindAction("Look", throwIfNotFound: true);
         m_OnFoot_Interact = m_OnFoot.FindAction("Interact", throwIfNotFound: true);
+        m_OnFoot_ResizeUp = m_OnFoot.FindAction("ResizeUp", throwIfNotFound: true);
+        m_OnFoot_ResizeDown = m_OnFoot.FindAction("ResizeDown", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -763,6 +805,8 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_OnFoot_Jump;
     private readonly InputAction m_OnFoot_Look;
     private readonly InputAction m_OnFoot_Interact;
+    private readonly InputAction m_OnFoot_ResizeUp;
+    private readonly InputAction m_OnFoot_ResizeDown;
     public struct OnFootActions
     {
         private @PlayerInput m_Wrapper;
@@ -771,6 +815,8 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         public InputAction @Jump => m_Wrapper.m_OnFoot_Jump;
         public InputAction @Look => m_Wrapper.m_OnFoot_Look;
         public InputAction @Interact => m_Wrapper.m_OnFoot_Interact;
+        public InputAction @ResizeUp => m_Wrapper.m_OnFoot_ResizeUp;
+        public InputAction @ResizeDown => m_Wrapper.m_OnFoot_ResizeDown;
         public InputActionMap Get() { return m_Wrapper.m_OnFoot; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -792,6 +838,12 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Interact.started += instance.OnInteract;
             @Interact.performed += instance.OnInteract;
             @Interact.canceled += instance.OnInteract;
+            @ResizeUp.started += instance.OnResizeUp;
+            @ResizeUp.performed += instance.OnResizeUp;
+            @ResizeUp.canceled += instance.OnResizeUp;
+            @ResizeDown.started += instance.OnResizeDown;
+            @ResizeDown.performed += instance.OnResizeDown;
+            @ResizeDown.canceled += instance.OnResizeDown;
         }
 
         private void UnregisterCallbacks(IOnFootActions instance)
@@ -808,6 +860,12 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Interact.started -= instance.OnInteract;
             @Interact.performed -= instance.OnInteract;
             @Interact.canceled -= instance.OnInteract;
+            @ResizeUp.started -= instance.OnResizeUp;
+            @ResizeUp.performed -= instance.OnResizeUp;
+            @ResizeUp.canceled -= instance.OnResizeUp;
+            @ResizeDown.started -= instance.OnResizeDown;
+            @ResizeDown.performed -= instance.OnResizeDown;
+            @ResizeDown.canceled -= instance.OnResizeDown;
         }
 
         public void RemoveCallbacks(IOnFootActions instance)
@@ -949,6 +1007,8 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         void OnJump(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
+        void OnResizeUp(InputAction.CallbackContext context);
+        void OnResizeDown(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

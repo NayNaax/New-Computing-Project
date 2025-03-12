@@ -16,7 +16,7 @@ public class PerspectiveObjectManager : MonoBehaviour
     public float dragDistance = 10f;
     public float dragSmoothing = 5f;
     public LayerMask collisionLayers;
-    public float collisionBuffer = 0.1f; // Increased buffer to prevent clipping
+    public float collisionBuffer = 0.1f;
     public float groundCheckDistance = 0.5f;
     public bool snapToGroundOnRelease = true;
 
@@ -24,8 +24,14 @@ public class PerspectiveObjectManager : MonoBehaviour
     private Vector3 dragOffset;
     private float dragDepth;
 
+    // Add these
+    private InputManager inputManager;
+    private ResizableObject resizableObject;
+
     void Start()
     {
+        inputManager = FindObjectOfType<InputManager>(); // Find the InputManager in the scene
+
         foreach (var cubeData in cubes)
         {
             if (cubeData.cube != null)
@@ -42,8 +48,14 @@ public class PerspectiveObjectManager : MonoBehaviour
                 rb.drag = 0.1f;
                 rb.angularDrag = 0.1f;
 
+                // Make sure each cube has the ResizableObject component
+                if (cubeData.cube.GetComponent<ResizableObject>() == null)
+                {
+                    cubeData.cube.gameObject.AddComponent<ResizableObject>();
+                }
+
                 // Set up PerspectiveObject component
-                cubeData.perspectiveScript = cubeData.cube.GetComponent<PerspectiveObject>() 
+                cubeData.perspectiveScript = cubeData.cube.GetComponent<PerspectiveObject>()
                                              ?? cubeData.cube.gameObject.AddComponent<PerspectiveObject>();
 
                 cubeData.perspectiveScript.targetPoint = cubeData.targetPoint;
@@ -52,7 +64,7 @@ public class PerspectiveObjectManager : MonoBehaviour
                 cubeData.perspectiveScript.dragSmoothing = dragSmoothing;
                 cubeData.perspectiveScript.collisionBuffer = collisionBuffer;
                 cubeData.perspectiveScript.groundCheckDistance = groundCheckDistance;
-                
+
                 cubeData.perspectiveScript.enabled = false;
 
                 if (cubeData.targetPoint == null)
@@ -62,6 +74,9 @@ public class PerspectiveObjectManager : MonoBehaviour
                     cubeData.targetPoint.position = cubeData.cube.position;
                     cubeData.perspectiveScript.targetPoint = cubeData.targetPoint;
                 }
+
+                // Add ResizableObject to the cube
+                resizableObject = cubeData.cube.GetComponent<ResizableObject>() ?? cubeData.cube.gameObject.AddComponent<ResizableObject>();
             }
         }
     }
@@ -118,6 +133,24 @@ public class PerspectiveObjectManager : MonoBehaviour
                 if (draggingCube.targetPoint != null)
                 {
                     draggingCube.targetPoint.position = smoothPosition;
+                }
+            }
+            
+            // IMPORTANT CHANGE: Get the ResizableObject component from the CURRENT dragging cube
+            ResizableObject currentResizable = draggingCube.cube.GetComponent<ResizableObject>();
+            
+            // Check for resize input with the correct component
+            if (currentResizable != null && inputManager != null)
+            {
+                if (inputManager.onFoot.ResizeUp.IsPressed())
+                {
+                    Debug.Log($"Resizing up {draggingCube.cube.name}");
+                    currentResizable.ResizeUp();
+                }
+                if (inputManager.onFoot.ResizeDown.IsPressed())
+                {
+                    Debug.Log($"Resizing down {draggingCube.cube.name}");
+                    currentResizable.ResizeDown();
                 }
             }
         }
@@ -194,17 +227,33 @@ public class PerspectiveObjectManager : MonoBehaviour
     {
         Collider cubeCollider = cubeData.cube.GetComponent<Collider>();
         if (cubeCollider == null) return false;
+        
+        // Get the movement direction and distance
+        Vector3 movementDelta = targetPosition - cubeData.cube.position;
+        float movementDistance = movementDelta.magnitude;
+        
+        if (movementDistance < 0.0001f) return false; // No significant movement
+        
+        // Cast the collider in the movement direction to check for collisions
+        RaycastHit[] hits = Physics.BoxCastAll(
+            cubeData.cube.position,
+            cubeCollider.bounds.extents - new Vector3(collisionBuffer/2, collisionBuffer/2, collisionBuffer/2),
+            movementDelta.normalized,
+            cubeData.cube.rotation,
+            movementDistance,
+            collisionLayers
+        );
 
-        Collider[] hitColliders = Physics.OverlapBox(targetPosition, cubeCollider.bounds.extents - new Vector3(collisionBuffer, collisionBuffer, collisionBuffer), cubeData.cube.rotation, collisionLayers);
-
-        foreach (var hitCollider in hitColliders)
+        foreach (var hit in hits)
         {
-            if (hitCollider != cubeCollider && !hitCollider.isTrigger)
+            // Skip this cube's own collider and triggers
+            if (hit.collider != cubeCollider && !hit.collider.isTrigger)
             {
-                return true;
+                return true; // Collision detected
             }
         }
-        return false;
+        
+        return false; // No collision
     }
 
     void OnDrawGizmos()

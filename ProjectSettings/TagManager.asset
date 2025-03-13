@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - PerspectiveObject
+  - EndButton
   layers:
   - Default
   - TransparentFX

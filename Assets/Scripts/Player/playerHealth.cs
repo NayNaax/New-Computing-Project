@@ -22,18 +22,18 @@ public class playerHealth : MonoBehaviour
     {
         health = Mathf.Clamp(health, 0, maxHealth);
         UpdateHealthUI();
-        if(Input.GetKeyDown(KeyCode.A))
+        if(Input.GetKeyDown(KeyCode.Z))
         {
             TakeDamage(Random.Range(5, 10));
         }
-          if(Input.GetKeyDown(KeyCode.S))
+          if(Input.GetKeyDown(KeyCode.X))
         {
             Heal(Random.Range(5, 10));
         }
     }
     public void UpdateHealthUI()
     {
-        Debug.Log(health);
+       // Debug.Log(health);
         float fillf = frontHealthbar.fillAmount;
         float fillb = backHealthbar.fillAmount;
         float hFraction = health / maxHealth;

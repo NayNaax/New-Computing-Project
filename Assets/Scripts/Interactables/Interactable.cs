@@ -1,20 +1,27 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events; // Important for events
 
-public abstract class Interactable : MonoBehaviour
+public class Interactable : MonoBehaviour
 {
-    // Message that is displayed to player when they are in range of the interactable object
+    [Tooltip("Message displayed to the player when in range.")]
     public string promptMessage;
-    
-    // Function that is called when the player interacts with the object
-    public void BaseInteract()
+
+    [Tooltip("Event triggered when the object is interacted with.")]
+    public UnityEvent onInteract; // Using a UnityEvent
+
+    // Interaction logic
+    public virtual void Interact()
     {
-        Interact();
+        onInteract?.Invoke(); // Safely invoke the event
+        //Debug.Log($"Interacted with {gameObject.name}"); // Helpful for debugging
     }
-    protected virtual void Interact()
+
+    private void Reset()
     {
-        // Template Function that is overwritten by subclasseses
+        // Add a default prompt message if none is provided
+        if (string.IsNullOrEmpty(promptMessage))
+        {
+            promptMessage = "Interact";
+        }
     }
 }

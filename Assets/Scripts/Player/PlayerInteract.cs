@@ -1,17 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem; // Necessary for new Input System
 
 public class PlayerInteract : MonoBehaviour
 {
     private Camera cam;
-    [SerializeField]
-    private float distance = 3f;
-    [SerializeField]
-    private LayerMask mask;
+
+    [Tooltip("Maximum distance for interaction.")]
+    public float distance = 3f;
+
+    [Tooltip("LayerMask to filter interactable objects.")]
+    public LayerMask mask;
+
     private PlayerUI playerUI;
     private InputManager inputManager;
-    // Start is called before the first frame update
+
     void Start()
     {
         cam = GetComponent<PlayerLook>().cam;
@@ -19,23 +21,25 @@ public class PlayerInteract : MonoBehaviour
         inputManager = GetComponent<InputManager>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         playerUI.UpdateText(string.Empty);
-        // Creating a ray on the camera to detect interactable objects
+
         Ray ray = new Ray(cam.transform.position, cam.transform.forward);
         //Debug.DrawRay(ray.origin, ray.direction * distance);
-        RaycastHit hitInfo; // Information about the object that was hit
+        RaycastHit hitInfo;
+
         if (Physics.Raycast(ray, out hitInfo, distance, mask))
         {
             if (hitInfo.collider.GetComponent<Interactable>() != null)
             {
                 Interactable interactable = hitInfo.collider.GetComponent<Interactable>();
                 playerUI.UpdateText(interactable.promptMessage);
-                if (inputManager.onFoot.Interact.triggered)
+
+                // Check for interaction using the Input Action
+                if (inputManager.onFoot.Interact.WasPressedThisFrame()) // Changed to WasPressedThisFrame
                 {
-                    interactable.BaseInteract();
+                    interactable.Interact(); // Use the Interact() method
                 }
             }
         }

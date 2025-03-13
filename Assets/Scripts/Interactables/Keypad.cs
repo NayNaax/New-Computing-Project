@@ -19,26 +19,26 @@ public class Keypad : Interactable
     private void Start()
     {
         // Ensure the Animator component is assigned
-        if (door == null)
-        {
-            Debug.LogError("Door GameObject not assigned to Keypad script on " + gameObject.name);
-            enabled = false; // Disable the script to prevent errors
-            return;
-        }
+        // if (door == null)
+        // {
+        //     Debug.LogError("Door GameObject not assigned to Keypad script on " + gameObject.name);
+        //     enabled = false; // Disable the script to prevent errors
+        //     return;
+        // }
 
-        if (doorAnimator == null)
-        {
-            doorAnimator = door.GetComponent<Animator>();
-            if (doorAnimator == null)
-            {
-                Debug.LogError("No Animator component found on the door GameObject assigned to Keypad script on " + gameObject.name);
-                enabled = false;
-                return;
-            }
-        }
+        // if (doorAnimator == null)
+        // {
+        //     doorAnimator = door.GetComponent<Animator>();
+        //     if (doorAnimator == null)
+        //     {
+        //         Debug.LogError("No Animator component found on the door GameObject assigned to Keypad script on " + gameObject.name);
+        //         enabled = false;
+        //         return;
+        //     }
+        // }
 
         // Set the initial state of the door
-        doorAnimator.SetBool(animationParameterName, doorOpen);
+        // doorAnimator.SetBool(animationParameterName, doorOpen);
     }
 
     public override void Interact()

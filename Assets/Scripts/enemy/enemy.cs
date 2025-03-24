@@ -12,6 +12,8 @@ public class enemy : MonoBehaviour
     // debugging purposes
     private string currentState;
     public path path;
+    public float health = 100f;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -24,5 +26,34 @@ public class enemy : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void TakeDamage(float damage)
+    {
+        health -= damage;
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        Debug.Log("Enemy died!");
+        Destroy(gameObject);
+    }
+
+    public void ApplyDamage(RaycastHit hit, float damage)
+    {
+        enemy enemyComponent = hit.collider.GetComponent<enemy>();
+        if (enemyComponent != null)
+        {
+            enemyComponent.TakeDamage(damage);
+            Debug.Log("Damage applied to enemy.");
+        }
+        else
+        {
+            Debug.LogWarning("Enemy component not found on hit object!");
+        }
     }
 }

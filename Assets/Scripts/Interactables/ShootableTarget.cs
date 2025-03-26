@@ -1,8 +1,9 @@
 using UnityEngine;
 using System.Collections;
 
+// Modified ShootableTarget.cs
 // Using ShootableTarget.cs [cite: uploaded:Assets/Scripts/Interactables/ShootableTarget.cs]
-public class ShootableTarget : MonoBehaviour
+public class ShootableTarget : MonoBehaviour, IShootable // Implement the IShootable interface
 {
     [Tooltip("The GameObject (e.g., pressure plate 2) hidden by this target.")]
     public GameObject hidingObject;
@@ -10,9 +11,19 @@ public class ShootableTarget : MonoBehaviour
     [Tooltip("Should the hiding object be destroyed (won't reappear) or just disabled?")]
     public bool destroyHidingObject = false;
 
-    [Header("Block Reset Settings")] // Added Header
+    [Header("Block Reset Settings")]
     [Tooltip("Drag the specific movable block that should reset its position here.")]
-    public GameObject movableBlockToReset; // Reference to the block
+    public GameObject movableBlockToReset;
+
+    [Header("Reward Durations (Seconds)")] // Added durations here too for consistency
+    [Tooltip("Duration the hidingObject stays hidden for a bullseye hit.")]
+    public float bullseyeDuration = 12f; // Keep original script's default if desired
+    [Tooltip("Duration for hitting the next outer ring (e.g., Red).")]
+    public float outerRing1Duration = 8f;
+    [Tooltip("Duration for hitting the middle ring (e.g., Blue).")]
+    public float outerRing2Duration = 5f;
+    [Tooltip("Duration for hitting the outermost ring (e.g., White).")]
+    public float outerRing3Duration = 3f;
 
     // --- Timer State Variables ---
     private float timerRemaining = 0f;
@@ -20,18 +31,16 @@ public class ShootableTarget : MonoBehaviour
     private Coroutine timerCoroutine = null;
 
     // --- Block Position Variables ---
-    private Vector3 initialBlockPosition; // To store the block's starting position
-    private bool blockPositionStored = false; // Flag to ensure position is stored only once
+    private Vector3 initialBlockPosition;
+    private bool blockPositionStored = false;
 
     // --- Optional: UI for Timer Display ---
     // public UnityEngine.UI.Text timerDisplay;
 
     void Start()
     {
-        // Ensure the hiding object is visible and timer is off when the game starts
-        ResetTargetState(); // This already handles hidingObject visibility
+        ResetTargetState();
 
-        // Store the initial position of the movable block if assigned
         if (movableBlockToReset != null)
         {
             initialBlockPosition = movableBlockToReset.transform.position;
@@ -44,31 +53,43 @@ public class ShootableTarget : MonoBehaviour
         }
     }
 
-    // Update remains the same (optional UI logic)
     void Update()
     {
-        // --- Optional: Update Timer UI ---
-        // if (timerDisplay != null)
-        // {
-        //     if (isTimerActive)
-        //     {
-        //         timerDisplay.text = $"Time: {timerRemaining:F1}";
-        //     }
-        //     else
-        //     {
-        //         timerDisplay.text = "";
-        //     }
-        // }
-        // ---------------------------------
+        // Optional UI update logic remains the same
     }
 
-    // Activate method remains the same
-    public void Activate(float duration)
+    // --- MODIFIED: Renamed Activate to ActivateReward and added hitTag parameter ---
+    public void ActivateReward(string hitTag)
     {
-        if (hidingObject == null && !destroyHidingObject)
+         if (hidingObject == null && !destroyHidingObject)
         {
             Debug.LogWarning($"Hiding object not assigned to target '{gameObject.name}'. Cannot activate timer.", this);
             return;
+        }
+
+        float duration = 0f;
+
+        // Determine duration based on the hit tag
+        if (hitTag == "TargetYellow") // Assuming this target uses same tags
+        {
+            duration = bullseyeDuration;
+        }
+        else if (hitTag == "TargetRed")
+        {
+            duration = outerRing1Duration;
+        }
+         else if (hitTag == "TargetBlue")
+        {
+            duration = outerRing2Duration;
+        }
+         else if (hitTag == "TargetWhite")
+        {
+            duration = outerRing3Duration;
+        }
+        else
+        {
+             Debug.LogWarning($"ShootableTarget (Original): Received unknown hitTag '{hitTag}'. No action taken.", this);
+             return;
         }
 
         if (timerCoroutine != null)
@@ -77,7 +98,7 @@ public class ShootableTarget : MonoBehaviour
             Debug.Log("Previous timer stopped.");
         }
 
-        Debug.Log($"Target activated! Revealing pressure plate for {duration} seconds.", this);
+        Debug.Log($"Target activated! Revealing hiding object for {duration} seconds.", this);
 
         if (!destroyHidingObject)
         {
@@ -85,18 +106,21 @@ public class ShootableTarget : MonoBehaviour
         }
         else
         {
-            if (hidingObject != null)
-            {
-                Debug.LogWarning("Hiding object destroyed, it will not reappear.", this);
-                Destroy(hidingObject);
-            }
-            return;
+             // Destroy logic remains the same
+             if (hidingObject != null)
+             {
+                 Debug.LogWarning("Hiding object destroyed, it will not reappear.", this);
+                 Destroy(hidingObject);
+             }
+             return; // Don't start timer if destroyed
         }
 
         timerCoroutine = StartCoroutine(StartTimer(duration));
     }
+    // --- END MODIFICATION ---
 
-    // Coroutine to handle the countdown
+
+    // Coroutine to handle the countdown (logic remains the same)
     private IEnumerator StartTimer(float duration)
     {
         timerRemaining = duration;
@@ -115,37 +139,28 @@ public class ShootableTarget : MonoBehaviour
         timerCoroutine = null;
         Debug.Log("Timer finished!");
 
-        // --- START BLOCK RESET LOGIC ---
-        // Re-enable the hiding object (pressure plate 2)
+        // Re-enable the hiding object
         if (!destroyHidingObject && hidingObject != null)
         {
-            Debug.Log("Re-hiding pressure plate.");
+            Debug.Log("Re-hiding object.");
             hidingObject.SetActive(true);
         }
 
-        // Reset the movable block's position if it's assigned and position was stored
+        // Reset the movable block's position
         if (movableBlockToReset != null && blockPositionStored)
         {
             Debug.Log($"Timer ended. Resetting position of {movableBlockToReset.name} to {initialBlockPosition}");
-
-            // Stop physics momentum before teleporting (optional but good practice)
             Rigidbody blockRb = movableBlockToReset.GetComponent<Rigidbody>();
             if (blockRb != null)
             {
                 blockRb.velocity = Vector3.zero;
                 blockRb.angularVelocity = Vector3.zero;
             }
-
-            // Directly set the position
             movableBlockToReset.transform.position = initialBlockPosition;
-
-            // If using PerspectiveObjectManager, you might need to update its internal target point too,
-            // although teleporting should generally be okay. If issues arise, this might need refinement.
         }
-        // --- END BLOCK RESET LOGIC ---
     }
 
-    // ResetTargetState remains largely the same, just ensures hidingObject is active
+    // ResetTargetState logic remains the same
     public void ResetTargetState()
     {
          if (timerCoroutine != null)
@@ -160,14 +175,10 @@ public class ShootableTarget : MonoBehaviour
          {
              hidingObject.SetActive(true);
          }
-         // --- Optional: Clear Timer UI ---
-         // if (timerDisplay != null) timerDisplay.text = "";
-         // ---------------------------------
-         Debug.Log("Target state reset (ensured hiding object is visible).");
-         // Note: This does NOT reset the movable block position, only the timer/plate visibility.
-         // Block reset only happens when the timer naturally runs out.
+         Debug.Log("Target state reset.");
     }
 
+    // OnDestroy logic remains the same
     void OnDestroy()
     {
         if (timerCoroutine != null)

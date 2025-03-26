@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// Using GUN.cs [cite: uploaded:Scripts/GUN.cs]
+// Modified GUN.cs
+// Using GUN.cs [cite: uploaded:Assets/Scripts/GUN.cs]
 public class GUN : MonoBehaviour
 {
     [Header("Gun Settings")]
@@ -13,21 +14,8 @@ public class GUN : MonoBehaviour
     public ParticleSystem muzzleFlash;
     public GameObject impactEffect;
 
-    [Header("Target Interaction Settings")]
-    // --- Define Timer Durations ---
-    public float durationYellow = 12f;
-    public float durationRed = 8f;
-    public float durationBlue = 5f;
-    public float durationWhite = 3f;
-    // -----------------------------
-
-    // --- Optional Scoring ---
-    // public int score = 0;
-    // public int scoreWhite = 10;
-    // public int scoreBlue = 25;
-    // public int scoreRed = 50;
-    // public int scoreYellow = 100;
-    // -----------------------
+    // --- Removed target-specific timer durations ---
+    // Keep scoring if needed
 
     private float nextTimeToFire = 0f;
 
@@ -52,67 +40,39 @@ public class GUN : MonoBehaviour
         {
             Debug.Log("Hit: " + hit.collider.name + " (Tag: " + hit.collider.tag + ")");
 
-            bool targetRingHit = false;      // Flag if a valid ring was hit
-            float durationToPass = 0f;      // Duration determined by the hit ring
-
             string hitTag = hit.collider.tag; // Get the tag of the object hit
 
-            // Determine duration based on the tag
-            if (hitTag == "TargetYellow")
+            // --- MODIFIED: Check for IShootable interface ---
+            IShootable shootableComponent = hit.collider.GetComponentInParent<IShootable>();
+            if (shootableComponent != null)
             {
-                // score += scoreYellow; // Optional scoring
-                Debug.Log("Hit Yellow Rim!");
-                durationToPass = durationYellow;
-                targetRingHit = true;
+                 // Check if the hit tag corresponds to a target ring
+                 if (hitTag == "TargetYellow" || hitTag == "TargetRed" || hitTag == "TargetBlue" || hitTag == "TargetWhite")
+                 {
+                    Debug.Log($"Found IShootable component. Activating reward for hit on tag: {hitTag}");
+                    // Call the interface method, passing the specific tag that was hit
+                    shootableComponent.ActivateReward(hitTag);
+                 }
+                 else
+                 {
+                    // Optional: Log if the hit object had IShootable but the specific collider tag wasn't a target ring
+                    // Debug.Log($"Hit object with IShootable, but tag '{hitTag}' is not a recognized target ring.");
+                 }
             }
-            else if (hitTag == "TargetRed")
+            // --- END MODIFICATION ---
+            else
             {
-                // score += scoreRed;
-                Debug.Log("Hit Red Rim!");
-                durationToPass = durationRed;
-                targetRingHit = true;
-            }
-            else if (hitTag == "TargetBlue")
-            {
-                 // score += scoreBlue;
-                 Debug.Log("Hit Blue Rim!");
-                 durationToPass = durationBlue;
-                 targetRingHit = true;
-            }
-            else if (hitTag == "TargetWhite")
-            {
-                 // score += scoreWhite;
-                 Debug.Log("Hit White Rim!");
-                 durationToPass = durationWhite;
-                 targetRingHit = true;
-            }
-
-            // If a valid ring was hit, activate the parent's timer
-            if (targetRingHit)
-            {
-                // Find the ShootableTarget script on the PARENT of the hit ring
-                ShootableTarget parentTargetScript = hit.collider.GetComponentInParent<ShootableTarget>();
-                if (parentTargetScript != null)
-                {
-                    // Call the Activate method, passing the determined duration
-                    parentTargetScript.Activate(durationToPass);
-                }
-                else
-                {
-                    Debug.LogWarning("Hit a target ring, but couldn't find ShootableTarget script on parent!", hit.collider.gameObject);
-                }
+                 // Optional: Check for enemy or other interactables if needed
+                 enemy enemyComponent = hit.collider.GetComponent<enemy>();
+                 if (enemyComponent != null)
+                 {
+                     enemyComponent.TakeDamage(damage);
+                     Debug.Log("Enemy health: " + enemyComponent.health);
+                 }
             }
 
-            // --- Keep Enemy Logic ---
-            enemy enemyComponent = hit.collider.GetComponent<enemy>();
-            if (enemyComponent != null)
-            {
-                enemyComponent.TakeDamage(damage);
-                Debug.Log("Enemy health: " + enemyComponent.health);
-            }
-            // ------------------------
 
-            // Spawn impact effect
+            // Spawn impact effect (no changes needed here)
             if (impactEffect != null)
             {
                 GameObject impact = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));

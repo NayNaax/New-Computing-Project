@@ -8,6 +8,10 @@ TagManager:
   - EndButton
   - TeleportFloor
   - Checkpoint
+  - TargetWhite
+  - TargetBlue
+  - TargetRed
+  - TargetYellow
   layers:
   - Default
   - TransparentFX

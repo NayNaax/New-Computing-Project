@@ -10,13 +10,11 @@ public class Interactable : MonoBehaviour
     public string promptMessage;
 
     [Tooltip("Event triggered when the object is interacted with.")]
-    public UnityEvent onInteract; // Using a UnityEvent
+    public UnityEvent onInteract;
 
-    // Interaction logic
     public virtual void Interact()
     {
         onInteract?.Invoke(); // Safely invoke the event
-        //Debug.Log($"Interacted with {gameObject.name}"); // Helpful for debugging
     }
 
     private void Reset()

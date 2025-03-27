@@ -8,12 +8,11 @@ public class EndButton : Interactable
 
     public override void Interact()
     {
-        base.Interact(); // Invoke events
+        base.Interact(); // Invoke events from the base class
 
         if (!string.IsNullOrEmpty(nextSceneName))
         {
             SceneManager.LoadScene(nextSceneName);
-            //Debug.Log("Loading Scene: " + nextSceneName);
         }
         else
         {

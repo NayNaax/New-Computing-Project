@@ -29,5 +29,4 @@ public class PlayerLook : MonoBehaviour
         //rotate player to look left and right
         transform.Rotate(Vector3.up * (mouseX * Time.deltaTime) * xSensitivity);
     }
-
 }

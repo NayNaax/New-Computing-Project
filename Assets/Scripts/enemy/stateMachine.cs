@@ -6,21 +6,18 @@ public class stateMachine : MonoBehaviour
 {   
     public baseState currentState;
     public patrolState patrolState;
-    // property for patrol state
-
 
     public void Initialise()
     {
         patrolState = new patrolState();
         ChangeState(patrolState);
     }
-    // Start is called before the first frame update
+    
     void Start()
     {
         
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (currentState != null)
@@ -28,15 +25,14 @@ public class stateMachine : MonoBehaviour
             currentState.Execute();
         }
     }
+    
     public void ChangeState(baseState newState)
     {
-        // check activeState is not null
         if (currentState != null)
         {
-            // exit the current state
             currentState.Exit();
         }
-        // change to a new state
+        
         currentState = newState;
 
         // fail safe null check to make sure the new state is not null

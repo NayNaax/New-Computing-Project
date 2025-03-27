@@ -23,43 +23,39 @@ public class ShootableTarget3 : MonoBehaviour, IShootable // Implement the IShoo
     [Tooltip("Duration for hitting the outermost ring (e.g., White).")]
     public float outerRing3Duration = 3f;
 
-    // --- Timer State Variables ---
     private Coroutine wallCoroutine = null;
     private bool isWallHidden = false;
 
     void Start()
     {
-        // Ensure the third wall is visible at the start
         SetWallState(true);
         isWallHidden = false;
     }
 
-    // This method will be called by GUN.cs when this target is hit
+    // Called by GUN.cs when this target is hit
     public void ActivateReward(string hitTag)
     {
         float duration = 0f;
 
-        // Determine duration based on the tag passed from GUN.cs
-        if (hitTag == bullseyeTag) // e.g., "TargetYellow" or "TargetYellow3"
+        if (hitTag == bullseyeTag)
         {
             duration = bullseyeDuration;
             Debug.Log($"ShootableTarget3: Bullseye hit! Hiding wall 3 for {duration}s.");
         }
-        // Assuming standard tags for outer rings unless you specify different ones for target 3
         else if (hitTag == "TargetRed")
         {
             duration = outerRing1Duration;
-             Debug.Log($"ShootableTarget3: Outer Ring 1 hit! Hiding wall 3 for {duration}s.");
+            Debug.Log($"ShootableTarget3: Outer Ring 1 hit! Hiding wall 3 for {duration}s.");
         }
         else if (hitTag == "TargetBlue")
         {
-             duration = outerRing2Duration;
-             Debug.Log($"ShootableTarget3: Outer Ring 2 hit! Hiding wall 3 for {duration}s.");
+            duration = outerRing2Duration;
+            Debug.Log($"ShootableTarget3: Outer Ring 2 hit! Hiding wall 3 for {duration}s.");
         }
         else if (hitTag == "TargetWhite")
         {
-             duration = outerRing3Duration;
-             Debug.Log($"ShootableTarget3: Outer Ring 3 hit! Hiding wall 3 for {duration}s.");
+            duration = outerRing3Duration;
+            Debug.Log($"ShootableTarget3: Outer Ring 3 hit! Hiding wall 3 for {duration}s.");
         }
         else
         {
@@ -67,39 +63,35 @@ public class ShootableTarget3 : MonoBehaviour, IShootable // Implement the IShoo
             return;
         }
 
-        // Stop any existing timer coroutine
         if (wallCoroutine != null)
         {
             StopCoroutine(wallCoroutine);
             Debug.Log("ShootableTarget3: Stopping existing wall timer.");
         }
 
-        // Start the coroutine to hide the wall
         wallCoroutine = StartCoroutine(WallControlCoroutine(duration));
     }
 
-    // Coroutine to hide the wall blocks and then show them again
     private IEnumerator WallControlCoroutine(float duration)
     {
         Debug.Log($"ShootableTarget3: Hiding wall blocks 3 for {duration} seconds.");
-        SetWallState(false); // Hide the wall
+        SetWallState(false);
         isWallHidden = true;
 
-        yield return new WaitForSeconds(duration); // Wait
+        yield return new WaitForSeconds(duration);
 
         Debug.Log("ShootableTarget3: Timer finished! Showing wall blocks 3.");
-        SetWallState(true); // Show the wall again
+        SetWallState(true);
         isWallHidden = false;
         wallCoroutine = null;
     }
 
-    // Helper function to set the active state for all wall blocks in *this* target's list
     private void SetWallState(bool activeState)
     {
         if (wallBlocks3 == null || wallBlocks3.Count == 0)
         {
-             Debug.LogWarning("ShootableTarget3: No blocks assigned to 'Wall Blocks 3' list!", this);
-             return;
+            Debug.LogWarning("ShootableTarget3: No blocks assigned to 'Wall Blocks 3' list!", this);
+            return;
         }
 
         foreach (GameObject block in wallBlocks3)
@@ -108,15 +100,14 @@ public class ShootableTarget3 : MonoBehaviour, IShootable // Implement the IShoo
             {
                 block.SetActive(activeState);
             }
-             else
+            else
             {
-                 Debug.LogWarning("ShootableTarget3: A null GameObject was found in the 'Wall Blocks 3' list!", this);
+                Debug.LogWarning("ShootableTarget3: A null GameObject was found in the 'Wall Blocks 3' list!", this);
             }
         }
         Debug.Log($"ShootableTarget3: Set wall blocks 3 active state to: {activeState}");
     }
 
-    // Ensure coroutine stops if the target is destroyed
     void OnDestroy()
     {
         if (wallCoroutine != null)

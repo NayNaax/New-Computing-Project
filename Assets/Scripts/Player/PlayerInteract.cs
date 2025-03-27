@@ -28,7 +28,6 @@ public class PlayerInteract : MonoBehaviour
         playerUI.UpdateText(string.Empty);
 
         Ray ray = new Ray(cam.transform.position, cam.transform.forward);
-        //Debug.DrawRay(ray.origin, ray.direction * distance);
         RaycastHit hitInfo;
 
         if (Physics.Raycast(ray, out hitInfo, distance, mask))
@@ -39,9 +38,9 @@ public class PlayerInteract : MonoBehaviour
                 playerUI.UpdateText(interactable.promptMessage);
 
                 // Check for interaction using the Input Action
-                if (inputManager.onFoot.Interact.WasPressedThisFrame()) // Changed to WasPressedThisFrame
+                if (inputManager.onFoot.Interact.WasPressedThisFrame())
                 {
-                    interactable.Interact(); // Use the Interact() method
+                    interactable.Interact();
                 }
             }
         }

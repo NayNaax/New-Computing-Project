@@ -47,7 +47,6 @@ public class Keypad : Interactable
 
         doorOpen = !doorOpen;
         doorAnimator.SetBool(animationParameterName, doorOpen);
-        //Debug.Log("Keypad Interact");
     }
 
     private void Reset()

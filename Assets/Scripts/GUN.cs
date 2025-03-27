@@ -14,9 +14,6 @@ public class GUN : MonoBehaviour
     public ParticleSystem muzzleFlash;
     public GameObject impactEffect;
 
-    // --- Removed target-specific timer durations ---
-    // Keep scoring if needed
-
     private float nextTimeToFire = 0f;
 
     void Update()
@@ -42,7 +39,6 @@ public class GUN : MonoBehaviour
 
             string hitTag = hit.collider.tag; // Get the tag of the object hit
 
-            // --- MODIFIED: Check for IShootable interface ---
             IShootable shootableComponent = hit.collider.GetComponentInParent<IShootable>();
             if (shootableComponent != null)
             {
@@ -53,16 +49,10 @@ public class GUN : MonoBehaviour
                     // Call the interface method, passing the specific tag that was hit
                     shootableComponent.ActivateReward(hitTag);
                  }
-                 else
-                 {
-                    // Optional: Log if the hit object had IShootable but the specific collider tag wasn't a target ring
-                    // Debug.Log($"Hit object with IShootable, but tag '{hitTag}' is not a recognized target ring.");
-                 }
             }
-            // --- END MODIFICATION ---
             else
             {
-                 // Optional: Check for enemy or other interactables if needed
+                 // Check for enemy component
                  enemy enemyComponent = hit.collider.GetComponent<enemy>();
                  if (enemyComponent != null)
                  {
@@ -71,8 +61,7 @@ public class GUN : MonoBehaviour
                  }
             }
 
-
-            // Spawn impact effect (no changes needed here)
+            // Spawn impact effect
             if (impactEffect != null)
             {
                 GameObject impact = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));

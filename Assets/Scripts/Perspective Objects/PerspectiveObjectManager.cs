@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Using PerspectiveObjectManager.cs [cite: uploaded:Scripts/Perspective Objects/PerspectiveObjectManager.cs]
 public class PerspectiveObjectManager : MonoBehaviour
 {
     [System.Serializable]
@@ -26,18 +25,15 @@ public class PerspectiveObjectManager : MonoBehaviour
     private float dragDepth;
 
     private InputManager inputManager;
-    // Removed ResizableObject reference as it wasn't used in the drag logic here
-    // private ResizableObject resizableObject;
 
     void Start()
     {
-        inputManager = FindObjectOfType<InputManager>(); // Find the InputManager in the scene
+        inputManager = FindObjectOfType<InputManager>();
 
         foreach (var cubeData in cubes)
         {
             if (cubeData.cube != null)
             {
-                // --- (Rigidbody, ResizableObject, PerspectiveObject setup remains the same) ---
                 Rigidbody rb = cubeData.cube.GetComponent<Rigidbody>();
                 if (rb == null)
                 {
@@ -64,27 +60,24 @@ public class PerspectiveObjectManager : MonoBehaviour
                 cubeData.perspectiveScript.groundCheckDistance = groundCheckDistance;
                 cubeData.perspectiveScript.enabled = false; // Assuming this should remain false initially
 
-                if (cubeData.targetPoint == null && cubeData.cube != null) // Added null check for cube
+                if (cubeData.targetPoint == null && cubeData.cube != null)
                 {
                     GameObject targetObj = new GameObject(cubeData.cube.name + "_Target");
                     cubeData.targetPoint = targetObj.transform;
                     cubeData.targetPoint.position = cubeData.cube.position;
-                    if (cubeData.perspectiveScript != null) // Check perspectiveScript exists
+                    if (cubeData.perspectiveScript != null)
                     {
                         cubeData.perspectiveScript.targetPoint = cubeData.targetPoint;
                     }
                 }
-                 // Removed assigning to local resizableObject here
             }
         }
     }
 
     void Update()
     {
-        // --- START INPUT MODIFICATION ---
         // Use Right Mouse Button (1) to start dragging
-        if (Input.GetMouseButtonDown(1)) // Changed from 0 to 1
-        // --- END INPUT MODIFICATION ---
+        if (Input.GetMouseButtonDown(1))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -111,19 +104,16 @@ public class PerspectiveObjectManager : MonoBehaviour
             }
         }
 
-        // --- START INPUT MODIFICATION ---
         // Use Right Mouse Button (1) to stop dragging
-        if (Input.GetMouseButtonUp(1)) // Changed from 0 to 1
-        // --- END INPUT MODIFICATION ---
+        if (Input.GetMouseButtonUp(1))
         {
             if (draggingCube != null && snapToGroundOnRelease)
             {
                 SnapToGround(draggingCube);
             }
-            draggingCube = null; // Stop dragging
+            draggingCube = null;
         }
 
-        // --- Dragging Logic (remains mostly the same) ---
         if (draggingCube != null)
         {
             Vector3 mouseWorldPoint = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, dragDepth));
@@ -132,19 +122,18 @@ public class PerspectiveObjectManager : MonoBehaviour
             Rigidbody rb = draggingCube.cube.GetComponent<Rigidbody>();
             if (rb == null) return; // Should not happen based on Start(), but good check
 
-            // Use MovePosition for smoother physics interaction if Rigidbody is involved
-             if (!CheckCollision(targetPosition, draggingCube)) // Check for collisions before moving
-             {
-                 Vector3 smoothPosition = Vector3.Lerp(draggingCube.cube.position, targetPosition, Time.deltaTime * dragSmoothing * 10f); // Adjusted smoothing
-                 rb.MovePosition(smoothPosition);
+            // Check for collisions before moving
+            if (!CheckCollision(targetPosition, draggingCube))
+            {
+                Vector3 smoothPosition = Vector3.Lerp(draggingCube.cube.position, targetPosition, Time.deltaTime * dragSmoothing * 10f);
+                rb.MovePosition(smoothPosition);
 
-                 // Update target point if it exists
-                 if (draggingCube.targetPoint != null)
-                 {
-                     draggingCube.targetPoint.position = smoothPosition;
-                 }
-             }
-
+                // Update target point if it exists
+                if (draggingCube.targetPoint != null)
+                {
+                    draggingCube.targetPoint.position = smoothPosition;
+                }
+            }
 
             // Handle Resizing (using Input Manager if available)
             ResizableObject currentResizable = draggingCube.cube.GetComponent<ResizableObject>();
@@ -163,19 +152,15 @@ public class PerspectiveObjectManager : MonoBehaviour
             }
         }
 
-        // --- Proximity Check (remains the same) ---
-         foreach (var cubeData in cubes)
-         {
-             // Ensure cubeData and cubeData.cube are not null
-             if (cubeData != null && cubeData.cube != null && cubeData != draggingCube)
-             {
-                 CheckPlayerProximity(cubeData);
-             }
-         }
+        foreach (var cubeData in cubes)
+        {
+            // Ensure cubeData and cubeData.cube are not null
+            if (cubeData != null && cubeData.cube != null && cubeData != draggingCube)
+            {
+                CheckPlayerProximity(cubeData);
+            }
+        }
     }
-
-    // --- Helper methods (CheckPlayerProximity, SnapToGround, CheckCollision, OnDrawGizmos) remain the same ---
-    // ... (Make sure these methods are present and unchanged from your original script) ...
 
     private void CheckPlayerProximity(CubeData cubeData)
     {
@@ -189,7 +174,7 @@ public class PerspectiveObjectManager : MonoBehaviour
             Vector3 awayFromPlayer = cubeData.cube.position - Camera.main.transform.position;
             awayFromPlayer.y = 0; // Keep movement horizontal
 
-            if (awayFromPlayer.magnitude < 0.1f) // Avoid issues if player is exactly at the cube center
+            if (awayFromPlayer.magnitude < .1f) // Avoid issues if player is exactly at the cube center
             {
                 awayFromPlayer = Camera.main.transform.forward;
                 awayFromPlayer.y = 0;
@@ -205,7 +190,6 @@ public class PerspectiveObjectManager : MonoBehaviour
                 Rigidbody rb = cubeData.cube.GetComponent<Rigidbody>();
                 if (rb == null) return;
 
-                // Use MovePosition for consistency
                 rb.MovePosition(Vector3.Lerp(cubeData.cube.position, targetPosition, Time.deltaTime * 5f));
 
                 // Update target point if it exists
@@ -236,7 +220,7 @@ public class PerspectiveObjectManager : MonoBehaviour
                 Rigidbody rb = cubeData.cube.GetComponent<Rigidbody>();
                 if (rb == null) return;
 
-                rb.MovePosition(newPosition); // Snap position
+                rb.MovePosition(newPosition);
 
                 // Update target point if it exists
                 if (cubeData.targetPoint != null)
@@ -246,7 +230,6 @@ public class PerspectiveObjectManager : MonoBehaviour
             }
         }
     }
-
 
     private bool CheckCollision(Vector3 targetPosition, CubeData cubeData)
     {
@@ -258,53 +241,21 @@ public class PerspectiveObjectManager : MonoBehaviour
         // Ensure halfExtents are not negative
         halfExtents = Vector3.Max(halfExtents, Vector3.zero);
 
-
         // Check for overlap at the target position first
         Collider[] overlaps = Physics.OverlapBox(targetPosition, halfExtents, cubeData.cube.rotation, collisionLayers);
         foreach (var hit in overlaps)
         {
              if (hit != cubeCollider && !hit.isTrigger)
              {
-                 // Debug.Log($"Collision predicted with {hit.name} at target position {targetPosition}");
                  return true; // Collision detected at the destination
              }
         }
 
-
-        // Optional: Cast slightly if overlap check isn't sufficient (might be redundant)
-        /*
-        Vector3 movementDelta = targetPosition - cubeData.cube.position;
-        float movementDistance = movementDelta.magnitude;
-
-        if (movementDistance > 0.001f) // Only cast if moving
-        {
-             RaycastHit[] hits = Physics.BoxCastAll(
-                cubeData.cube.position, // Start from current position
-                halfExtents,
-                movementDelta.normalized, // Cast in direction of movement
-                cubeData.cube.rotation,
-                movementDistance, // Only cast distance needed
-                collisionLayers
-            );
-
-            foreach (var hit in hits)
-            {
-                if (hit.collider != cubeCollider && !hit.collider.isTrigger)
-                {
-                    // Debug.Log($"Collision predicted with {hit.collider.name} during movement");
-                    return true; // Collision detected during movement
-                }
-            }
-        }
-        */
-
         return false; // No collision detected
     }
 
-     void OnDrawGizmos()
-     {
-         // Draw wireframes for debugging
-         // ... (Gizmos code remains the same) ...
-     }
-
+    void OnDrawGizmos()
+    {
+        // Draw wireframes for debugging
+    }
 }

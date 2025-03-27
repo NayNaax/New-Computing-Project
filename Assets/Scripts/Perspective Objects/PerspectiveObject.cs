@@ -31,22 +31,21 @@ public class PerspectiveObject : MonoBehaviour
         rb = GetComponent<Rigidbody>();
 
         if (rb == null)
-            {
-                rb = gameObject.AddComponent<Rigidbody>();
-            }
-            rb.isKinematic = false;
-            rb.useGravity = false;
-            rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-            rb.constraints = RigidbodyConstraints.FreezeRotation;
+        {
+            rb = gameObject.AddComponent<Rigidbody>();
+        }
+        rb.isKinematic = false;
+        rb.useGravity = false;
+        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+        rb.constraints = RigidbodyConstraints.FreezeRotation;
 
         lastValidPosition = transform.position;
 
         if (targetPoint == null)
-            {
-                Debug.LogError($"TargetPoint is not assigned for {gameObject.name}. Please assign it in the Inspector.");
-            }
+        {
+            Debug.LogError($"TargetPoint is not assigned for {gameObject.name}. Please assign it in the Inspector.");
+        }
     }
-
 
     void Update()
     {

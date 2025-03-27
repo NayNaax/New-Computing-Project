@@ -1,9 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-// Modified ShootableTarget.cs
-// Using ShootableTarget.cs [cite: uploaded:Assets/Scripts/Interactables/ShootableTarget.cs]
-public class ShootableTarget : MonoBehaviour, IShootable // Implement the IShootable interface
+public class ShootableTarget : MonoBehaviour, IShootable
 {
     [Tooltip("The GameObject (e.g., pressure plate 2) hidden by this target.")]
     public GameObject hidingObject;
@@ -15,9 +13,9 @@ public class ShootableTarget : MonoBehaviour, IShootable // Implement the IShoot
     [Tooltip("Drag the specific movable block that should reset its position here.")]
     public GameObject movableBlockToReset;
 
-    [Header("Reward Durations (Seconds)")] // Added durations here too for consistency
+    [Header("Reward Durations (Seconds)")]
     [Tooltip("Duration the hidingObject stays hidden for a bullseye hit.")]
-    public float bullseyeDuration = 12f; // Keep original script's default if desired
+    public float bullseyeDuration = 12f;
     [Tooltip("Duration for hitting the next outer ring (e.g., Red).")]
     public float outerRing1Duration = 8f;
     [Tooltip("Duration for hitting the middle ring (e.g., Blue).")]
@@ -33,9 +31,6 @@ public class ShootableTarget : MonoBehaviour, IShootable // Implement the IShoot
     // --- Block Position Variables ---
     private Vector3 initialBlockPosition;
     private bool blockPositionStored = false;
-
-    // --- Optional: UI for Timer Display ---
-    // public UnityEngine.UI.Text timerDisplay;
 
     void Start()
     {
@@ -55,10 +50,9 @@ public class ShootableTarget : MonoBehaviour, IShootable // Implement the IShoot
 
     void Update()
     {
-        // Optional UI update logic remains the same
+    
     }
 
-    // --- MODIFIED: Renamed Activate to ActivateReward and added hitTag parameter ---
     public void ActivateReward(string hitTag)
     {
          if (hidingObject == null && !destroyHidingObject)
@@ -70,7 +64,7 @@ public class ShootableTarget : MonoBehaviour, IShootable // Implement the IShoot
         float duration = 0f;
 
         // Determine duration based on the hit tag
-        if (hitTag == "TargetYellow") // Assuming this target uses same tags
+        if (hitTag == "TargetYellow")
         {
             duration = bullseyeDuration;
         }
@@ -106,7 +100,6 @@ public class ShootableTarget : MonoBehaviour, IShootable // Implement the IShoot
         }
         else
         {
-             // Destroy logic remains the same
              if (hidingObject != null)
              {
                  Debug.LogWarning("Hiding object destroyed, it will not reappear.", this);
@@ -117,10 +110,7 @@ public class ShootableTarget : MonoBehaviour, IShootable // Implement the IShoot
 
         timerCoroutine = StartCoroutine(StartTimer(duration));
     }
-    // --- END MODIFICATION ---
 
-
-    // Coroutine to handle the countdown (logic remains the same)
     private IEnumerator StartTimer(float duration)
     {
         timerRemaining = duration;
@@ -160,7 +150,6 @@ public class ShootableTarget : MonoBehaviour, IShootable // Implement the IShoot
         }
     }
 
-    // ResetTargetState logic remains the same
     public void ResetTargetState()
     {
          if (timerCoroutine != null)
@@ -178,7 +167,6 @@ public class ShootableTarget : MonoBehaviour, IShootable // Implement the IShoot
          Debug.Log("Target state reset.");
     }
 
-    // OnDestroy logic remains the same
     void OnDestroy()
     {
         if (timerCoroutine != null)

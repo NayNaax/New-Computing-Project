@@ -12,7 +12,6 @@ public class playerHealth : MonoBehaviour
     public float chipSpeed = 2f;
     public Image frontHealthbar;
     public Image backHealthbar;
-    // Start is called before the first frame update
 
     [Header("Damage Overlay")]
     public Image overlay; // our Damage overlay image
@@ -26,7 +25,6 @@ public class playerHealth : MonoBehaviour
         overlay.color = new Color(overlay.color.r, overlay.color.g, overlay.color.b, 0);
     }
 
-    // Update is called once per frame
     void Update()
     {
         health = Mathf.Clamp(health, 0, maxHealth);
@@ -47,7 +45,6 @@ public class playerHealth : MonoBehaviour
     }
     public void UpdateHealthUI()
     {
-       // Debug.Log(health);
         float fillf = frontHealthbar.fillAmount;
         float fillb = backHealthbar.fillAmount;
         float hFraction = health / maxHealth;
@@ -77,7 +74,6 @@ public class playerHealth : MonoBehaviour
         lerpTimer = 0f;
         durationTimer = 0f;
         overlay.color = new Color(overlay.color.r, overlay.color.g, overlay.color.b, 1);
-
     }
 
     public void Heal(float healAmount)

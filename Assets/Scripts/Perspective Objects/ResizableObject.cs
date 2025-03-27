@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ResizableObject : MonoBehaviour
 {
-    public float resizeAmount = 0.03f;  // Reduced from 0.1f to 0.03f
+    public float resizeAmount = 0.03f;
     public float resizeInterval = 0.1f; // Add a delay between resizes
     public float minSize = 0.5f;
     public float maxSize = 2.0f;

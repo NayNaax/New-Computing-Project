@@ -92,22 +92,18 @@ public class playerHealth : MonoBehaviour
         lerpTimer = 0f;
     }
 
-    // Detect collision with the enemy
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            Debug.Log("Collided with enemy. Taking damage.");
             TakeDamage(damageOnCollision);
         }
     }
 
-    // Alternatively, use OnTriggerEnter if the enemy collider is set as a trigger
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Enemy"))
         {
-            Debug.Log("Triggered by enemy. Taking damage.");
             TakeDamage(damageOnCollision);
         }
     }

@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// Modified GUN.cs
-// Using GUN.cs [cite: uploaded:Assets/Scripts/GUN.cs]
 public class GUN : MonoBehaviour
 {
     [Header("Gun Settings")]
@@ -37,11 +35,10 @@ public class GUN : MonoBehaviour
         {
             Debug.Log("Hit: " + hit.collider.name + " (Tag: " + hit.collider.tag + ")");
 
-            string hitTag = hit.collider.tag; // Get the tag of the object hit
+            string hitTag = hit.collider.tag;
 
-            // --- MODIFICATION START ---
             // 1. Check for Level 3 Boss FIRST
-            Level3Boss boss = hit.collider.GetComponentInParent<Level3Boss>(); // Check parent too, just in case
+            Level3Boss boss = hit.collider.GetComponentInParent<Level3Boss>();
             if (boss != null)
             {
                 Debug.Log("Hit Level 3 Boss!");
@@ -57,15 +54,14 @@ public class GUN : MonoBehaviour
                     if (hitTag == "TargetYellow" || hitTag == "TargetRed" || hitTag == "TargetBlue" || hitTag == "TargetWhite")
                     {
                         Debug.Log($"Found IShootable component. Activating reward for hit on tag: {hitTag}");
-                        // Call the interface method, passing the specific tag that was hit
                         shootableComponent.ActivateReward(hitTag);
                     }
-                    // Note: If IShootable can also be an enemy, you might need more complex logic here
+                    
                 }
                 else
                 {
-                    // 3. Check for generic enemy component (if no boss or IShootable found)
-                    enemy enemyComponent = hit.collider.GetComponentInParent<enemy>(); // Check parent too
+                    // 3. Check for generic enemy component
+                    enemy enemyComponent = hit.collider.GetComponentInParent<enemy>();
                     if (enemyComponent != null)
                     {
                          Debug.Log("Hit generic enemy.");
@@ -78,10 +74,8 @@ public class GUN : MonoBehaviour
                     }
                 }
             }
-            // --- MODIFICATION END ---
 
-
-            // Spawn impact effect (remains the same)
+            // Spawn impact effect
             if (impactEffect != null)
             {
                 GameObject impact = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));

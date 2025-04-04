@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Collider))] // Ensure there's a collider
+[RequireComponent(typeof(Collider))]
 public class PressurePlateTrigger : MonoBehaviour
 {
     [Tooltip("Assign the TimedSequenceManager GameObject here.")]
@@ -34,12 +34,11 @@ public class PressurePlateTrigger : MonoBehaviour
     {
         Debug.Log($"Something entered trigger on {gameObject.name}: {other.gameObject.name} with tag {other.tag}");
         
-        // Check if the manager is assigned and the collider is the Player
         if (sequenceManager != null && other.CompareTag("Player"))
         {
             Debug.Log($"Player entered Plate {plateID} ({gameObject.name})");
 
-            // Call the appropriate function on the manager based on Plate ID
+            // Trigger appropriate action based on plate ID
             if (plateID == 1)
             {
                 sequenceManager.StartPlate1Sequence();
@@ -51,7 +50,7 @@ public class PressurePlateTrigger : MonoBehaviour
         }
         else if (sequenceManager == null)
         {
-             // Log only once if manager is null to avoid spam
+             // Log only once to avoid spam
              if (!loggedManagerNullError)
              {
                   Debug.LogError($"Sequence Manager is null on Plate {plateID} ({gameObject.name}) trigger script.", this);
@@ -60,16 +59,5 @@ public class PressurePlateTrigger : MonoBehaviour
         }
     }
 
-     private bool loggedManagerNullError = false; // Prevent console spam
-
-     // Optional: Add OnTriggerExit if needed for specific logic,
-     // but for this sequence, it might not be necessary.
-     // private void OnTriggerExit(Collider other)
-     // {
-     //     if (sequenceManager != null && other.CompareTag("Player"))
-     //     {
-     //         Debug.Log($"Player exited Plate {plateID} ({gameObject.name})");
-     //         // Add exit logic here if required
-     //     }
-     // }
+     private bool loggedManagerNullError = false;
 }

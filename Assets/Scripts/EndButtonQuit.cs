@@ -49,7 +49,7 @@ public class EndButtonQuit : MonoBehaviour
         #endif
     }
 
-    // Optional: Ensure listener is removed when object is destroyed
+    // Ensure listener is removed when object is destroyed
     void OnDestroy()
     {
         if (quitButton != null)

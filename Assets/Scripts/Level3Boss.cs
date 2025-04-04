@@ -1,12 +1,12 @@
 using UnityEngine;
-using UnityEngine.Events; // For the optional death event
+using UnityEngine.Events;
 
 // Place this script on your Level 3 Boss GameObject
 public class Level3Boss : MonoBehaviour
 {
     [Header("Boss Stats")]
     [Tooltip("Total health points for the boss.")]
-    public float health = 500f; // Example health value
+    public float health = 500f;
 
     [Header("References")]
     [Tooltip("Drag the specific 'End Button Quit' UI GameObject here.")]
@@ -53,10 +53,6 @@ public class Level3Boss : MonoBehaviour
         // Trigger any other events linked to the boss's death
         onBossDeath?.Invoke();
 
-        // Optional: Add explosion effect, disable components, play animation, etc.
-
-        // Destroy the boss GameObject after a short delay (optional)
-        // Destroy(gameObject, 2f); // Example delay
-        Destroy(gameObject); // Or destroy immediately
+        Destroy(gameObject);
     }
 }

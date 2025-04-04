@@ -7,60 +7,54 @@ public class PressurePlateLVL1 : MonoBehaviour
 {
     [Header("Level Specific Settings")]
     [Tooltip("The scene index for Level 1.")]
-    public int level1SceneIndex = 1; // Set this to the build index of your Level 1 scene
+    public int level1SceneIndex = 1; // Set this to the build index of the Level 1 scene
 
     [Header("Button Control Settings")]
     [Tooltip("Drag the EndButton GameObject here.")]
-    public GameObject endButton; // Assign the EndButton GameObject in the Inspector
+    public GameObject endButton;
 
     [Header("Activation Settings")]
     [Tooltip("Tag required for the activating object (e.g., CubeA, CubeB). Leave empty if only PerspectiveObject script is needed.")]
-    public string requiredTag = ""; // Optional: Specify tags like "CubeA" or "CubeB" if needed
+    public string requiredTag = "";
 
     private int objectsOnPlate = 0;
     private bool isLevel1 = false;
 
     void Start()
     {
-        // Check if the current scene is Level 1
         isLevel1 = SceneManager.GetActiveScene().buildIndex == level1SceneIndex;
 
         if (!isLevel1)
         {
              Debug.LogWarning($"PressurePlateLVL1 script is active in scene index {SceneManager.GetActiveScene().buildIndex}, but configured for index {level1SceneIndex}. It will not function here.");
              // Optionally disable the component if not in the correct level
-             // this.enabled = false;
-             return; // Stop further execution if not in Level 1
+             return;
         }
-
 
         if (endButton == null)
         {
             Debug.LogError("EndButton is not assigned in the inspector for PressurePlateLVL1!", this);
-            this.enabled = false; // Disable script if button isn't assigned
+            this.enabled = false;
             return;
         }
 
-        // Ensure the button is hidden initially only in Level 1
         endButton.SetActive(false);
-        objectsOnPlate = 0; // Initialize counter
-         Debug.Log("PressurePlateLVL1 Initialized for Level 1. EndButton hidden.");
+        objectsOnPlate = 0;
+        Debug.Log("PressurePlateLVL1 Initialized for Level 1. EndButton hidden.");
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!isLevel1) return; // Only run logic in Level 1
+        if (!isLevel1) return;
 
-        // Check if the entering object has the PerspectiveObject component
         PerspectiveObject perspectiveObj = other.GetComponent<PerspectiveObject>();
 
         if (perspectiveObj != null)
         {
-            // Optional: Check if the object has the required tag (if specified)
             if (string.IsNullOrEmpty(requiredTag) || other.CompareTag(requiredTag))
             {
                 objectsOnPlate++;
-                 Debug.Log($"Valid object '{other.name}' entered Plate LVL1. Count: {objectsOnPlate}");
+                Debug.Log($"Valid object '{other.name}' entered Plate LVL1. Count: {objectsOnPlate}");
 
                 // Show the button if this is the first valid object
                 if (objectsOnPlate == 1)
@@ -74,29 +68,27 @@ public class PressurePlateLVL1 : MonoBehaviour
                 Debug.Log($"Object '{other.name}' has PerspectiveObject but incorrect tag ('{other.tag}'). Plate LVL1 ignored.");
             }
         }
-         else
-         {
-             Debug.Log($"Object '{other.name}' lacks PerspectiveObject script. Plate LVL1 ignored.");
-         }
+        else
+        {
+            Debug.Log($"Object '{other.name}' lacks PerspectiveObject script. Plate LVL1 ignored.");
+        }
     }
 
     private void OnTriggerExit(Collider other)
     {
-         if (!isLevel1) return; // Only run logic in Level 1
+        if (!isLevel1) return;
 
-        // Check if the exiting object has the PerspectiveObject component
         PerspectiveObject perspectiveObj = other.GetComponent<PerspectiveObject>();
 
         if (perspectiveObj != null)
         {
-             // Optional: Check if the object has the required tag (if specified)
             if (string.IsNullOrEmpty(requiredTag) || other.CompareTag(requiredTag))
             {
                 // Ensure count doesn't go below zero
                 if (objectsOnPlate > 0)
                 {
                     objectsOnPlate--;
-                     Debug.Log($"Valid object '{other.name}' exited Plate LVL1. Count: {objectsOnPlate}");
+                    Debug.Log($"Valid object '{other.name}' exited Plate LVL1. Count: {objectsOnPlate}");
 
                     // Hide the button if this was the last valid object
                     if (objectsOnPlate == 0)

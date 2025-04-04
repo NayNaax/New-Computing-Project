@@ -1,14 +1,11 @@
 using UnityEngine;
-using System.Collections; // Required for Coroutines
+using System.Collections;
 
-// Placed in Assets/Scripts/Interactables/TimedButtonDoor.cs
-// Inherits from your existing Interactable script
-// Using Interactable.cs [cite: uploaded:Assets/Scripts/Interactables/Interactable.cs]
 public class TimedButtonDoor : Interactable
 {
     [Header("Door Settings")]
     [Tooltip("Assign the Animator component of the door(s) here.")]
-    public Animator doorAnimator; // Assign this in the Inspector
+    public Animator doorAnimator;
 
     [Tooltip("The exact name of the BOOLEAN parameter in the door Animator (e.g., IsOpen).")]
     public string animationParameterName = "IsOpen";
@@ -30,7 +27,6 @@ public class TimedButtonDoor : Interactable
         }
 
         // Ensure the door starts closed according to this script's logic
-        // Note: Another script could potentially override this initial state.
         SetDoorState(false);
     }
 
@@ -50,14 +46,10 @@ public class TimedButtonDoor : Interactable
             Debug.Log("Stopped previous close timer.");
         }
 
-        // Open the door immediately
         SetDoorState(true);
-
-        // Start the timer to close the door automatically
         closeDoorCoroutine = StartCoroutine(CloseDoorAfterDelay());
     }
 
-    // Coroutine to wait and then close the door
     private IEnumerator CloseDoorAfterDelay()
     {
         Debug.Log($"Door will close in {openDuration} seconds.");
@@ -68,12 +60,11 @@ public class TimedButtonDoor : Interactable
         closeDoorCoroutine = null; // Clear the coroutine reference
     }
 
-    // Helper function to set the door state via the Animator
     private void SetDoorState(bool shouldBeOpen)
     {
         if (doorAnimator != null)
         {
-             // Check if the parameter exists before trying to set it (optional good practice)
+            // Check if the parameter exists before trying to set it
             bool parameterExists = false;
             foreach (AnimatorControllerParameter param in doorAnimator.parameters)
             {
@@ -88,7 +79,6 @@ public class TimedButtonDoor : Interactable
             {
                 doorAnimator.SetBool(animationParameterName, shouldBeOpen);
                 isDoorCurrentlyOpen = shouldBeOpen;
-                //Debug.Log($"Set '{animationParameterName}' to {shouldBeOpen}");
             }
             else
             {
@@ -100,19 +90,15 @@ public class TimedButtonDoor : Interactable
     // Called when the script component is reset in the Inspector
     private void Reset()
     {
-        // Set a default prompt message for the PlayerUI
         promptMessage = "Press Button";
     }
 
-     // Optional: Ensure the coroutine is stopped if the button object is disabled or destroyed
     void OnDisable()
     {
         if (closeDoorCoroutine != null)
         {
             StopCoroutine(closeDoorCoroutine);
             closeDoorCoroutine = null;
-            // Consider if the door should be forced closed when the button is disabled
-            // SetDoorState(false);
         }
     }
 }

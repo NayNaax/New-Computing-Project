@@ -12,6 +12,7 @@ TagManager:
   - TargetBlue
   - TargetRed
   - TargetYellow
+  - Enemy
   layers:
   - Default
   - TransparentFX
